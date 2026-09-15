@@ -1,0 +1,137 @@
+openapi: 3.1.0
+info:
+  title: Vibe API
+  description: End-to-End API Specification for Vibe Intention Platform
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/v1
+    description: Localhost Development Server
+  - url: https://api.vibe.app/v1
+    description: Production API Gateway
+paths:
+  /auth/start_signup:
+    post:
+      summary: Start signup flow with age gate check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [region_code, dob_year]
+              properties:
+                region_code: { type: string, example: "US" }
+                dob_year: { type: integer, example: 2004 }
+                display_name: { type: string, example: "Maya" }
+      responses:
+        '200':
+          description: Signup token issued
+        '403':
+          description: Hard-stop for users under 16 years of age
+  /auth/verify_phone:
+    post:
+      summary: Verify phone with OTP and obtain access JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signup_token, phone_e164, otp]
+              properties:
+                signup_token: { type: string }
+                phone_e164: { type: string, example: "+12125550199" }
+                otp: { type: string, example: "123456" }
+      responses:
+        '200': { description: JWT issued }
+        '429': { description: Rate limit exceeded }
+  /auth/skip_phone:
+    post:
+      summary: Skip phone verification and obtain unverified JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signup_token]
+              properties:
+                signup_token: { type: string }
+      responses:
+        '200': { description: JWT issued with claims.unverified_phone=true }
+  /intents:
+    post:
+      summary: Create intent and get synchronous suggestions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [energy_level, activity_type, group_size_pref, time_window]
+              properties:
+                energy_level: { type: string, enum: [low, medium, high] }
+                activity_type: { type: array, items: { type: string } }
+                activity_subtype: { type: array, items: { type: string } }
+                group_size_pref: { type: string, enum: [one_on_one, small_group_3_6] }
+                time_window: { type: string, enum: [today, this_week] }
+                note: { type: string, maxLength: 80 }
+                radius_km: { type: integer, minimum: 1, maximum: 30 }
+      responses:
+        '200': { description: Intent created with top 12 ranked suggestions }
+  /suggestions:
+    get:
+      summary: Get candidate suggestions for active intent
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: List of suggestions }
+  /meetups:
+    post:
+      summary: Create confirmed meetup plan
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Meetup created }
+  /meetups/{id}/chat:
+    get:
+      summary: Get meetup-scoped chat messages
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Messages list }
+    post:
+      summary: Send chat message
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Message posted }
+  /journal/companion:
+    post:
+      summary: Interact with Vibe Mirror AI (Zero-Retention)
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Ephemeral AI response }
+  /reports:
+    post:
+      summary: Submit safety report (<= 2 taps)
+      security:
+        - bearerAuth: []
+      responses:
+        '201': { description: Report filed & subject blocked }
+  /subscriptions/validate_receipt:
+    post:
+      summary: Validate StoreKit 2 / Google Play Billing receipt
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Subscription activated }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

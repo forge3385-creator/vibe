@@ -1,0 +1,20 @@
+{
+  "@@locale": "ar",
+  "appName": "فايب",
+  "appTagline": "حوّل النوايا الرقمية إلى تواصل حقيقي في الواقع.",
+  "onboardingStart": "ابدأ",
+  "ageGateTitle": "سنة ميلادك",
+  "ageGateContinue": "متابعة",
+  "ageGateBlocked": "فايب مخصص للأعمار من 16 عاماً فما فوق.",
+  "phoneTitle": "ما هو رقم هاتفك؟",
+  "phoneSendCode": "إرسال الرمز",
+  "phoneSkip": "تخطي الآن",
+  "setIntentHeader": "ما هو نوع اللقاء؟",
+  "seeSuggestions": "عرض الاقتراحات",
+  "emptySuggestions": "لا يوجد أحد قريب يطابق نيتك الآن — وسّع نطاق البحث",
+  "broadenFilters": "توسيع البحث",
+  "plansTitle": "الخطط",
+  "journalTitle": "اليوميات",
+  "journalDisclaimer": "ذكاء فايب الاصطناعي شريك في الكتابة وليس معالجاً نفسياً.",
+  "savePrivately": "حفظ بسرية"
+}

@@ -1,0 +1,20 @@
+{
+  "@@locale": "en",
+  "appName": "Vibe",
+  "appTagline": "Turn digital intention into real-life connection.",
+  "onboardingStart": "Start",
+  "ageGateTitle": "Your year of birth",
+  "ageGateContinue": "Continue",
+  "ageGateBlocked": "Vibe is for ages 16+. We can't create an account for you yet.",
+  "phoneTitle": "What's your phone number?",
+  "phoneSendCode": "Send code",
+  "phoneSkip": "Skip for now",
+  "setIntentHeader": "What kind of vibe?",
+  "seeSuggestions": "See suggestions",
+  "emptySuggestions": "No one nearby matches right now — broaden filters",
+  "broadenFilters": "Broaden filters",
+  "plansTitle": "Plans",
+  "journalTitle": "Journal",
+  "journalDisclaimer": "Vibe's AI is a writing partner, not a therapist.",
+  "savePrivately": "Save privately"
+}

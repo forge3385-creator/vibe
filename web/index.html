@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vibe — Turn Digital Intention into Real-Life Connection</title>
+  <meta name="description" content="Vibe is a calm, privacy-first mobile platform for Gen Z turning digital intentions into safe, offline meetups.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="light-theme">
+  <!-- Top App Navigation / Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-logo"><i data-lucide="sparkles"></i></div>
+        <span class="brand-title">Vibe</span>
+      </div>
+      <div class="header-actions">
+        <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme">
+          <i data-lucide="moon"></i>
+        </button>
+        <button id="quick-report-btn" class="pill-btn danger-soft" title="Safety Report">
+          <i data-lucide="shield-alert"></i>
+          <span>Report / Safety</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Banner for Connection Status or Distress -->
+  <div id="crisis-banner" class="crisis-banner hidden" role="alert">
+    <div class="crisis-banner-content">
+      <i data-lucide="alert-triangle"></i>
+      <div class="crisis-text">
+        <strong>Vibe's AI isn't the right place for this.</strong>
+        <span>You matter. Tap below for immediate support or talk to a friend.</span>
+      </div>
+      <button id="crisis-banner-cta" class="pill-btn danger">Get Help Now</button>
+    </div>
+  </div>
+
+  <main class="app-container">
+    <!-- ONBOARDING FLOW MODAL / OVERLAY (if not signed in) -->
+    <section id="onboarding-overlay" class="onboarding-overlay hidden">
+      <div class="onboarding-card">
+        <!-- Step 1: Splash / Value Prop -->
+        <div id="onb-step-carousel" class="onb-step">
+          <div class="carousel-slide">
+            <div class="carousel-icon"><i data-lucide="compass"></i></div>
+            <h1 class="slide-title">Set Your Intent</h1>
+            <p class="slide-desc">Choose how you feel and what kind of vibe you want — coffee, a walk, a study session.</p>
+          </div>
+          <div class="carousel-dots">
+            <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+          <div class="onb-actions">
+            <button id="onb-start-btn" class="btn-primary full-width">Start Onboarding</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Age Gate (16+) -->
+        <div id="onb-step-age" class="onb-step hidden">
+          <h2 class="step-heading">Your Year of Birth</h2>
+          <p class="step-sub">Vibe is built exclusively for individuals aged 16 and older.</p>
+          <div class="form-group">
+            <label for="dob-year-input">Birth Year</label>
+            <input type="number" id="dob-year-input" min="1950" max="2026" value="2004" class="vibe-input" />
+          </div>
+          <div id="age-gate-error" class="error-msg hidden">Vibe is for ages 16+. We can't create an account for you yet.</div>
+          <div class="onb-actions">
+            <button id="age-gate-next-btn" class="btn-primary full-width">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Region & Phone Setup -->
+        <div id="onb-step-auth" class="onb-step hidden">
+          <h2 class="step-heading">Create Account</h2>
+          <p class="step-sub">Region-locked storage ensures full GDPR & CCPA privacy protection.</p>
+          <div class="form-group">
+            <label for="reg-name-input">Display Name</label>
+            <input type="text" id="reg-name-input" placeholder="e.g. Maya" value="Maya" class="vibe-input" />
+          </div>
+          <div class="form-group">
+            <label for="reg-region-select">Region</label>
+            <select id="reg-region-select" class="vibe-input">
+              <option value="US">United States (us-east-1)</option>
+              <option value="EU">European Union (eu-west-1)</option>
+              <option value="UK">United Kingdom</option>
+              <option value="IN">India</option>
+              <option value="BR">Brazil</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-phone-input">Phone Number (Optional)</label>
+            <input type="text" id="reg-phone-input" placeholder="+12125550199" class="vibe-input" />
+          </div>
+          <div class="onb-actions vertical">
+            <button id="auth-submit-btn" class="btn-primary full-width">Verify & Sign Up</button>
+            <button id="auth-skip-btn" class="btn-secondary full-width">Skip for Now (Unverified)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 CORE APP SCREENS / TABS -->
+    <!-- TAB 1: SET INTENT -->
+    <section id="tab-set" class="tab-pane active">
+      <div class="pane-header">
+        <h1 class="headline">What kind of vibe?</h1>
+        <p class="subheadline">State your intention. No infinite feeds — matches generate in seconds.</p>
+      </div>
+
+      <div class="vibe-form-card">
+        <!-- Energy Level Segmented Control -->
+        <div class="section-block">
+          <label class="block-label">1. How are you feeling? (Energy Level)</label>
+          <div class="energy-selector" role="radiogroup">
+            <button class="energy-btn" data-energy="low">
+              <i data-lucide="feather"></i>
+              <span>Low</span>
+              <small>Tired / Calm</small>
+            </button>
+            <button class="energy-btn active" data-energy="medium">
+              <i data-lucide="coffee"></i>
+              <span>Medium</span>
+              <small>Focused</small>
+            </button>
+            <button class="energy-btn" data-energy="high">
+              <i data-lucide="zap"></i>
+              <span>High</span>
+              <small>Energetic</small>
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity Selection (Max 3) -->
+        <div class="section-block">
+          <div class="block-label-row">
+            <label class="block-label">2. Pick Activities</label>
+            <span class="helper-badge">Pick 1 to 3</span>
+          </div>
+          <div class="chips-container" id="activity-chips">
+            <button class="chip active" data-act="chill"><i data-lucide="armchair"></i> Chill</button>
+            <button class="chip active" data-act="food"><i data-lucide="utensils"></i> Food & Coffee</button>
+            <button class="chip" data-act="active"><i data-lucide="activity"></i> Active</button>
+            <button class="chip" data-act="study"><i data-lucide="book-open"></i> Study</button>
+            <button class="chip" data-act="creative"><i data-lucide="palette"></i> Creative</button>
+            <button class="chip" data-act="outdoor"><i data-lucide="trees"></i> Outdoor</button>
+          </div>
+        </div>
+
+        <!-- Sub-Modifiers -->
+        <div class="section-block" id="subtypes-block">
+          <label class="block-label">Sub-topics / Focus</label>
+          <div class="chips-container" id="subtype-chips">
+            <button class="chip soft active" data-sub="cafe_hang">Cafe hang</button>
+            <button class="chip soft active" data-sub="coffee">Coffee</button>
+            <button class="chip soft" data-sub="movie_night">Movie night</button>
+            <button class="chip soft" data-sub="walk">Walk</button>
+            <button class="chip soft" data-sub="cowork_focus">Cowork focus</button>
+          </div>
+        </div>
+
+        <!-- Group Size & Time Window -->
+        <div class="two-col-grid">
+          <div class="section-block">
+            <label class="block-label">3. Who with?</label>
+            <div class="segmented-control" id="group-pref-control">
+              <button class="segment active" data-group="one_on_one">1-on-1</button>
+              <button class="segment" data-group="small_group_3_6">Small (3–6)</button>
+            </div>
+          </div>
+          <div class="section-block">
+            <label class="block-label">4. When?</label>
+            <div class="segmented-control" id="time-window-control">
+              <button class="segment active" data-time="today">Today</button>
+              <button class="segment" data-time="this_week">This Week</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Note (80 chars) -->
+        <div class="section-block">
+          <div class="block-label-row">
+            <label class="block-label">Drop a note (Optional)</label>
+            <span id="note-char-count" class="char-count">0 / 80</span>
+          </div>
+          <input type="text" id="intent-note-input" maxlength="80" placeholder="e.g. Looking for a quiet coffee & study hour around Brooklyn" class="vibe-input" />
+        </div>
+
+        <!-- Radius Slider -->
+        <div class="section-block">
+          <div class="block-label-row">
+            <label class="block-label">Search Radius</label>
+            <span id="radius-val" class="helper-badge">10 km</span>
+          </div>
+          <input type="range" id="intent-radius-slider" min="1" max="30" value="10" class="vibe-slider" />
+        </div>
+
+        <button id="commit-intent-btn" class="btn-primary full-width">
+          <i data-lucide="sparkles"></i>
+          <span>See suggestions</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 2: SUGGESTIONS -->
+    <section id="tab-suggestions" class="tab-pane">
+      <div class="pane-header flex-between">
+        <div>
+          <h1 class="headline" id="suggestions-header-title">Candidate Suggestions</h1>
+          <p class="subheadline" id="suggestions-header-sub">Ranked by Vibe Score affinity algorithm within 3s SLA.</p>
+        </div>
+        <button id="refresh-suggestions-btn" class="btn-outline-sm"><i data-lucide="refresh-cw"></i> Refresh</button>
+      </div>
+
+      <div id="suggestions-list" class="cards-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div id="suggestions-empty" class="empty-state-card hidden">
+        <i data-lucide="search-x" class="empty-icon"></i>
+        <h2 class="empty-title">No one nearby matches right now</h2>
+        <p class="empty-desc">Try expanding your search radius or changing your energy level.</p>
+        <button id="broaden-filters-btn" class="btn-primary">Broaden filters</button>
+      </div>
+    </section>
+
+    <!-- TAB 3: PLANS & CHAT -->
+    <section id="tab-plans" class="tab-pane">
+      <div class="pane-header">
+        <h1 class="headline">Confirmed Plans</h1>
+        <p class="subheadline">Active meetups and meetup-scoped chat channels.</p>
+      </div>
+
+      <div id="plans-container" class="plans-layout">
+        <div class="plans-sidebar">
+          <div class="timeline-header"><span class="badge-today">Today:</span> Scheduled Meetups</div>
+          <div id="meetups-list" class="cards-list">
+            <!-- Meetup items -->
+          </div>
+        </div>
+
+        <!-- Live Chat Area -->
+        <div class="chat-viewport">
+          <div id="active-chat-header" class="chat-header">
+            <div class="chat-title-group">
+              <h2 id="chat-meetup-title" class="chat-title">Select a Meetup Plan</h2>
+              <span id="chat-meetup-meta" class="chat-meta">Meetup-scoped ephemeral coordination</span>
+            </div>
+            <div class="chat-actions">
+              <button id="trusted-share-btn" class="pill-btn secondary-soft" title="Live Share with Trusted Contact">
+                <i data-lucide="shield-check"></i>
+                <span>Live Share</span>
+              </button>
+              <button id="mark-complete-btn" class="pill-btn primary-soft" title="Complete Meetup">
+                <i data-lucide="check-circle"></i>
+                <span>Complete</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Safety Tips Accordion -->
+          <div class="safety-tips-box">
+            <i data-lucide="info"></i>
+            <span>Safety: Pick a public place • Live status shared with contact • Leave anytime • No location tracking during meet.</span>
+          </div>
+
+          <!-- Messages Container -->
+          <div id="chat-messages-container" class="chat-messages">
+            <div class="system-bubble">Select or confirm a meetup on the left to start coordinating.</div>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="chat-composer">
+            <div class="composer-shortcuts">
+              <button id="send-place-card-btn" class="shortcut-btn"><i data-lucide="map-pin"></i> Suggest Place</button>
+              <button id="send-time-card-btn" class="shortcut-btn"><i data-lucide="clock"></i> Propose Time</button>
+              <button id="send-going-btn" class="shortcut-btn success"><i data-lucide="user-check"></i> I'm Going</button>
+            </div>
+            <form id="chat-form" class="composer-form">
+              <input type="text" id="chat-input" placeholder="Coordinate time & place..." class="vibe-input flex-1" />
+              <button type="submit" class="btn-primary icon-only"><i data-lucide="send"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: JOURNAL & VIBE MIRROR AI -->
+    <section id="tab-journal" class="tab-pane">
+      <div class="pane-header">
+        <h1 class="headline">Private Reflection & Vibe Mirror</h1>
+        <p class="subheadline">Encrypted at rest with XChaCha20-Poly1305. The AI companion is a writing partner, not a therapist.</p>
+      </div>
+
+      <div class="journal-disclaimer-banner">
+        <i data-lucide="shield"></i>
+        <span><strong>Disclaimer:</strong> Vibe's AI is a writing partner, not a therapist. Sessions are ephemeral and zero-retention.</span>
+      </div>
+
+      <div class="journal-grid">
+        <!-- New Entry & Vibe Mirror AI Interactive Box -->
+        <div class="journal-composer-card">
+          <div class="block-label-row">
+            <label class="block-label">Mood Check-in (1 to 5)</label>
+            <div class="mood-chips" id="mood-picker">
+              <button class="mood-chip" data-mood="1">1 🌧️</button>
+              <button class="mood-chip" data-mood="2">2 ⛅</button>
+              <button class="mood-chip active" data-mood="3">3 🌿</button>
+              <button class="mood-chip" data-mood="4">4 ☀️</button>
+              <button class="mood-chip" data-mood="5">5 ✨</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="journal-entry-text">Reflection Text</label>
+            <textarea id="journal-entry-text" rows="5" placeholder="Write freely. Your text is client-side encrypted before saving..." class="vibe-textarea"></textarea>
+          </div>
+
+          <div class="journal-actions-row">
+            <button id="ai-mirror-reflect-btn" class="btn-secondary">
+              <i data-lucide="bot"></i>
+              <span>Reflect with Vibe Mirror</span>
+            </button>
+            <button id="ai-action-bridge-btn" class="btn-secondary">
+              <i data-lucide="compass"></i>
+              <span>Help Me Act On This</span>
+            </button>
+            <button id="save-journal-entry-btn" class="btn-primary">
+              <i data-lucide="lock"></i>
+              <span>Save Privately</span>
+            </button>
+          </div>
+
+          <!-- AI Companion Response Box -->
+          <div id="vibe-mirror-output" class="vibe-mirror-bubble hidden">
+            <div class="mirror-header">
+              <i data-lucide="sparkles"></i>
+              <strong>Vibe Mirror (Zero-Retention)</strong>
+            </div>
+            <p id="vibe-mirror-text" class="mirror-content"></p>
+            <div id="vibe-mirror-actions" class="mirror-actions"></div>
+          </div>
+        </div>
+
+        <!-- Past Entries List -->
+        <div class="journal-history-card">
+          <h2 class="card-title">Encrypted Reflections</h2>
+          <div id="journal-entries-list" class="journal-list">
+            <!-- Entries list -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: ME & SETTINGS & ADMIN & STORYBOOK -->
+    <section id="tab-me" class="tab-pane">
+      <div class="pane-header">
+        <h1 class="headline">Account & Safety Settings</h1>
+        <p class="subheadline">Manage privacy controls, trusted contacts, data portability, and subscription.</p>
+      </div>
+
+      <div class="me-grid">
+        <!-- Profile Card -->
+        <div class="profile-card">
+          <div class="profile-avatar-large" id="profile-avatar-initial">M</div>
+          <div class="profile-info">
+            <h2 id="profile-name-label" class="profile-name">Maya R.</h2>
+            <div class="profile-badges">
+              <span id="phone-verified-badge" class="badge verified"><i data-lucide="check-check"></i> Phone Verified</span>
+              <span id="photo-verified-badge" class="badge soft"><i data-lucide="user-check"></i> Photo Verified</span>
+              <span id="region-badge" class="badge">Region: US</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Access Sub-Sections -->
+        <div class="settings-accordion">
+          <!-- Trusted Contacts (Chapter 10.5) -->
+          <div class="settings-section-card">
+            <div class="section-title-row">
+              <h3 class="section-title"><i data-lucide="users"></i> Trusted Contacts (Max 5)</h3>
+              <button id="add-trusted-contact-btn" class="btn-outline-sm">+ Add Contact</button>
+            </div>
+            <p class="section-desc">Designated contacts receive live plan metadata when you tap "Live Share".</p>
+            <div id="trusted-contacts-list" class="mini-list"></div>
+          </div>
+
+          <!-- Privacy & GDPR / CCPA Compliance (Chapter 23) -->
+          <div class="settings-section-card">
+            <h3 class="section-title"><i data-lucide="shield"></i> Privacy & Data Rights (GDPR / CCPA)</h3>
+            <div class="privacy-switches">
+              <label class="switch-row">
+                <span>Discoverable to Friends in Suggestions</span>
+                <input type="checkbox" id="pref-discoverable" checked />
+              </label>
+              <label class="switch-row">
+                <span>Share Profile Photo by Default</span>
+                <input type="checkbox" id="pref-photo-share" />
+              </label>
+            </div>
+            <div class="gdpr-actions">
+              <button id="gdpr-export-btn" class="btn-secondary"><i data-lucide="download"></i> Export All My Data (JSON)</button>
+              <button id="gdpr-delete-btn" class="btn-destructive"><i data-lucide="trash-2"></i> Delete Account (30-day purge)</button>
+            </div>
+          </div>
+
+          <!-- Premium Subscription (Chapter 22) -->
+          <div class="settings-section-card">
+            <h3 class="section-title"><i data-lucide="crown"></i> Vibe Premium (Quality-of-Life)</h3>
+            <p class="section-desc">Unlimited matches exist on both tiers. Premium unlocks advanced filters, 500MB journal capacity, and recurring plans.</p>
+            <div class="pricing-cards-row">
+              <div class="price-box">
+                <h4>Monthly Plan</h4>
+                <div class="price-val">$4.99 <small>/ month</small></div>
+                <button id="buy-monthly-btn" class="btn-secondary full-width">Subscribe Monthly</button>
+              </div>
+              <div class="price-box featured">
+                <span class="badge-featured">Save 33%</span>
+                <h4>Annual Plan</h4>
+                <div class="price-val">$39.99 <small>/ year</small></div>
+                <button id="buy-annual-btn" class="btn-primary full-width">Subscribe Annual</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Console & Component Storybook View -->
+          <div class="settings-section-card">
+            <h3 class="section-title"><i data-lucide="layout"></i> Developer & Admin Tools</h3>
+            <div class="dev-actions">
+              <button id="open-storybook-btn" class="btn-secondary"><i data-lucide="eye"></i> View Design Tokens & Storybook</button>
+              <button id="open-admin-reports-btn" class="btn-secondary"><i data-lucide="shield-alert"></i> Admin Moderation Queue</button>
+              <a href="/docs" target="_blank" class="btn-secondary"><i data-lucide="file-code"></i> OpenAPI 3.1 Swagger Docs</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: SAFETY REPORT (≤ 2 taps, Chapter 10.1 & 19.11) -->
+  <div id="report-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">What's wrong? (Safety Report)</h2>
+        <button id="close-report-modal" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Reporting immediately blocks this user for you and alerts human moderators.</p>
+        <div class="form-group">
+          <label>Category</label>
+          <div class="chips-container" id="report-category-chips">
+            <button class="chip active" data-cat="Harassment">Harassment</button>
+            <button class="chip" data-cat="Safety concern">Safety concern</button>
+            <button class="chip" data-cat="Spam">Spam</button>
+            <button class="chip" data-cat="Inappropriate content">Inappropriate</button>
+            <button class="chip" data-cat="Other">Other</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="report-body-input">Description (Max 500 chars)</label>
+          <textarea id="report-body-input" rows="3" maxlength="500" placeholder="Please describe what happened..." class="vibe-textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-report-btn" class="btn-secondary">Cancel</button>
+        <button id="submit-report-btn" class="btn-destructive">Submit & Block</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: STORYBOOK & COMPONENT PREVIEW -->
+  <div id="storybook-modal" class="modal-backdrop hidden">
+    <div class="modal-card large">
+      <div class="modal-header">
+        <h2 class="modal-title">Design System & Component Storybook</h2>
+        <button id="close-storybook-modal" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="storybook-content">
+        <!-- Storybook component demonstrations -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN MODERATION QUEUE -->
+  <div id="admin-modal" class="modal-backdrop hidden">
+    <div class="modal-card large">
+      <div class="modal-header">
+        <h2 class="modal-title">Admin Moderation Console</h2>
+        <button id="close-admin-modal" class="icon-btn"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="admin-reports-list" class="cards-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL 5-TAB BOTTOM NAVIGATION (Section 4.1 & 18.9) -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" data-tab="set">
+      <i data-lucide="sparkles"></i>
+      <span>Set</span>
+    </button>
+    <button class="nav-tab" data-tab="suggestions">
+      <i data-lucide="users"></i>
+      <span>Suggestions</span>
+    </button>
+    <button class="nav-tab" data-tab="plans">
+      <i data-lucide="calendar"></i>
+      <span>Plans</span>
+    </button>
+    <button class="nav-tab" data-tab="journal">
+      <i data-lucide="book-heart"></i>
+      <span>Journal</span>
+    </button>
+    <button class="nav-tab" data-tab="me">
+      <i data-lucide="user"></i>
+      <span>Me</span>
+    </button>
+  </nav>
+
+  <!-- Notification Toast / Snackbar -->
+  <div id="vibe-snackbar" class="vibe-snackbar hidden">
+    <span id="snackbar-msg">Action completed</span>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
