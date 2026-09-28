@@ -185,6 +185,14 @@ class VibeTokens {
     height: 1.3,
   );
 
+  static const TextStyle labelMd = TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 0.1,
+  );
+
   static const TextStyle labelSm = TextStyle(
     fontFamily: 'Inter',
     fontSize: 11,
