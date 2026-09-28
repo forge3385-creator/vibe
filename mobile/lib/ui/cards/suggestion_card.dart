@@ -25,7 +25,7 @@ class SuggestionCard extends StatelessWidget {
 
     return Semantics(
       label: '$title, $age years old, $affinity percent vibe affinity',
-      description: rationale,
+      hint: rationale,
       button: true,
       child: Container(
         margin: const EdgeInsets.only(bottom: VibeTokens.space3),

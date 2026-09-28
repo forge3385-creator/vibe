@@ -55,7 +55,3 @@ final ThemeData vibeDarkTheme = ThemeData(
     error: VibeTokens.semanticDanger,
   ),
 );
-
-extension VibeThemeExtension on VibeTokens {
-  static const Color darkBrandPurple500 = Color(0xFFA78BFA);
-}

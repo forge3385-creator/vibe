@@ -33,6 +33,7 @@ class VibeTokens {
   static const Color semanticInfo = Color(0xFF1D4ED8);
 
   // Dark Theme
+  static const Color darkBrandPurple500 = Color(0xFFA78BFA);
   static const Color darkBgApp = Color(0xFF0B0B12);
   static const Color darkBgSurface = Color(0xFF15151F);
   static const Color darkBgSurfaceAlt = Color(0xFF1C1C28);

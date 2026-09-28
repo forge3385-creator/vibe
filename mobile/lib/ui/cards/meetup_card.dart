@@ -24,8 +24,12 @@ class MeetupCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: VibeTokens.neutral000,
         borderRadius: BorderRadius.circular(VibeTokens.radiusLg),
-        border: Border.all(color: VibeTokens.neutral200, width: 1),
-        borderTop: const BorderSide(color: VibeTokens.brandPurple200, width: 2),
+        border: const Border(
+          top: BorderSide(color: VibeTokens.brandPurple200, width: 2),
+          left: BorderSide(color: VibeTokens.neutral200, width: 1),
+          right: BorderSide(color: VibeTokens.neutral200, width: 1),
+          bottom: BorderSide(color: VibeTokens.neutral200, width: 1),
+        ),
       ),
       padding: const EdgeInsets.all(VibeTokens.space4),
       child: Column(
