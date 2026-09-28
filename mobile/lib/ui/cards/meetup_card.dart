@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
+import '../../services/sound_manager.dart';
+import '../glass/glass_container.dart';
 
 class MeetupCard extends StatelessWidget {
   final String title;
@@ -21,65 +23,113 @@ class MeetupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: VibeTokens.space3),
-      decoration: BoxDecoration(
-        color: VibeTokens.neutral000,
-        borderRadius: BorderRadius.circular(VibeTokens.radiusLg),
-        border: const Border(
-          top: BorderSide(color: VibeTokens.brandPurple200, width: 2),
-          left: BorderSide(color: VibeTokens.neutral200, width: 1),
-          right: BorderSide(color: VibeTokens.neutral200, width: 1),
-          bottom: BorderSide(color: VibeTokens.neutral200, width: 1),
+      child: GlassContainer(
+        padding: const EdgeInsets.all(VibeTokens.space4),
+        borderRadius: VibeTokens.radiusLg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.access_time_rounded, size: 14, color: VibeTokens.brandPurple300),
+                    const SizedBox(width: 4),
+                    Text(
+                      timeLabel,
+                      style: VibeTokens.labelSm.copyWith(color: VibeTokens.brandPurple200),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0x3310B981),
+                    borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                    border: Border.all(color: const Color(0x6610B981)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.check, size: 11, color: Color(0xFF6EE7B7)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Confirmed Plan',
+                        style: VibeTokens.labelSm.copyWith(
+                          color: const Color(0xFF6EE7B7),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: VibeTokens.space2),
+            Text(
+              title,
+              style: VibeTokens.titleMd.copyWith(
+                color: VibeTokens.darkTextPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Row(
+              children: [
+                const Icon(Icons.place_outlined, size: 14, color: VibeTokens.darkTextMuted),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    placeAddress,
+                    style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextSecondary),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: VibeTokens.space3),
+            const Divider(color: Color(0x18FFFFFF)),
+            const SizedBox(height: VibeTokens.space2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.people_alt_outlined, size: 16, color: VibeTokens.glowCyan),
+                    const SizedBox(width: 6),
+                    Text(
+                      'You + $attendeesCount peer going',
+                      style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextSecondary),
+                    ),
+                  ],
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                  onTap: () {
+                    SoundManager().playTap();
+                    onOpen();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: VibeTokens.glassFillSubtle,
+                      borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                      border: Border.all(color: const Color(0x66A78BFA)),
+                    ),
+                    child: Text(
+                      'View Details',
+                      style: VibeTokens.labelSm.copyWith(
+                        color: VibeTokens.brandPurple200,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
-      padding: const EdgeInsets.all(VibeTokens.space4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                timeLabel,
-                style: VibeTokens.labelSm.copyWith(color: VibeTokens.brandPurple700),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: VibeTokens.brandPurple050,
-                  borderRadius: BorderRadius.circular(VibeTokens.radiusSm),
-                ),
-                child: Text(
-                  'Confirmed',
-                  style: VibeTokens.labelSm.copyWith(color: VibeTokens.brandPurple800),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: VibeTokens.space1),
-          Text(title, style: VibeTokens.titleMd.copyWith(color: VibeTokens.neutral900)),
-          const SizedBox(height: 2),
-          Text(placeAddress, style: VibeTokens.bodySm.copyWith(color: VibeTokens.neutral500)),
-          const SizedBox(height: VibeTokens.space3),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'You + $attendeesCount going',
-                style: VibeTokens.bodyMd.copyWith(color: VibeTokens.neutral600),
-              ),
-              ElevatedButton(
-                onPressed: onOpen,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: VibeTokens.brandPurple800,
-                  foregroundColor: VibeTokens.neutral000,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VibeTokens.radiusMd)),
-                ),
-                child: const Text('Open'),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

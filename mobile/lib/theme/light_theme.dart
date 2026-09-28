@@ -46,12 +46,11 @@ final ThemeData vibeDarkTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
   primaryColor: VibeTokens.darkBrandPurple500,
-  scaffoldBackgroundColor: VibeTokens.darkBgApp,
+  scaffoldBackgroundColor: VibeTokens.darkBgCosmic,
   colorScheme: const ColorScheme.dark(
     primary: VibeTokens.darkBrandPurple500,
     secondary: VibeTokens.brandPurple300,
     surface: VibeTokens.darkBgSurface,
-    background: VibeTokens.darkBgApp,
     error: VibeTokens.semanticDanger,
   ),
 );

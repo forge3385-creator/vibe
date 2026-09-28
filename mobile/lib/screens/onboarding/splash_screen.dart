@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/tokens.dart';
+import '../../services/sound_manager.dart';
+import '../../ui/glass/cosmic_background.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
@@ -31,6 +33,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _controller.forward();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      SoundManager().playStep();
+    });
 
     // Auto navigate after subtle branded intro
     Future.delayed(const Duration(milliseconds: 2200), () {
@@ -49,145 +54,104 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: VibeTokens.brandPurple900,
-      body: SafeArea(
+      backgroundColor: VibeTokens.darkBgCosmic,
+      body: CosmicBackground(
         child: GestureDetector(
-          onTap: () => context.go('/intro'),
+          onTap: () {
+            SoundManager().playTap();
+            context.go('/intro');
+          },
           behavior: HitTestBehavior.opaque,
-          child: Stack(
-            children: [
-              // Ambient soft purple gradient glow
-              Positioned(
-                top: -100,
-                right: -100,
-                child: Container(
-                  width: 320,
-                  height: 320,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        VibeTokens.brandPurple500.withOpacity(0.35),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -80,
-                left: -80,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        VibeTokens.brandPurple700.withOpacity(0.3),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return Opacity(
-                      opacity: _fadeAnimation.value,
-                      child: Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Sparkling logo mark
-                      Container(
-                        width: 88,
-                        height: 88,
-                        decoration: BoxDecoration(
-                          color: VibeTokens.brandPurple800,
-                          borderRadius: BorderRadius.circular(VibeTokens.radiusXl),
-                          border: Border.all(
-                            color: VibeTokens.brandPurple300.withOpacity(0.4),
-                            width: 1.5,
+          child: Center(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _fadeAnimation.value,
+                  child: Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Futuristic Emblem Orb
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: VibeTokens.heroGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: VibeTokens.glowPurple.withAlpha(140),
+                                blurRadius: 40,
+                                spreadRadius: 4,
+                              ),
+                              BoxShadow(
+                                color: VibeTokens.glowCyan.withAlpha(60),
+                                blurRadius: 20,
+                              ),
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: VibeTokens.brandPurple500.withOpacity(0.4),
-                              blurRadius: 32,
-                              offset: const Offset(0, 8),
+                          child: const Center(
+                            child: Icon(
+                              Icons.auto_awesome,
+                              size: 40,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: VibeTokens.space5),
+
+                        // Wordmark
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'VIBE',
+                              style: VibeTokens.displayLg.copyWith(
+                                color: VibeTokens.darkTextPrimary,
+                                fontSize: 38,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 4.0,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '✦',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: VibeTokens.glowPurple,
+                              ),
                             ),
                           ],
                         ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.auto_awesome,
-                            size: 44,
-                            color: VibeTokens.brandPurple100,
+
+                        const SizedBox(height: VibeTokens.space2),
+
+                        // Tagline
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: VibeTokens.glassFillSubtle,
+                            borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                            border: Border.all(color: VibeTokens.glassBorderLight),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: VibeTokens.space6),
-                      // Brand Wordmark
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'VIBE',
-                            style: VibeTokens.displayLg.copyWith(
-                              color: VibeTokens.neutral000,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 3.0,
+                          child: Text(
+                            'INTENTION TO REAL-WORLD CONNECTION',
+                            style: VibeTokens.labelSm.copyWith(
+                              color: VibeTokens.brandPurple200,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            '✦',
-                            style: TextStyle(
-                              color: VibeTokens.brandPurple300,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: VibeTokens.space3),
-                      // Gen-Z Brand Line
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: VibeTokens.space8),
-                        child: Text(
-                          'Turn intentions into real connections.',
-                          textAlign: TextAlign.center,
-                          style: VibeTokens.bodyLg.copyWith(
-                            color: VibeTokens.brandPurple100.withOpacity(0.9),
-                            letterSpacing: -0.2,
-                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: VibeTokens.space6,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Text(
-                    'Tap anywhere to begin',
-                    style: VibeTokens.bodySm.copyWith(
-                      color: VibeTokens.brandPurple200.withOpacity(0.6),
+                      ],
                     ),
                   ),
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ),
       ),

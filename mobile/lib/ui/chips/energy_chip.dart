@@ -6,13 +6,15 @@ enum EnergyType { low, medium, high }
 class EnergyChip extends StatelessWidget {
   final EnergyType energy;
   final bool isSelected;
-  final ValueChanged<EnergyType> onSelected;
+  final ValueChanged<EnergyType>? onSelected;
+  final bool small;
 
   const EnergyChip({
     super.key,
     required this.energy,
-    required this.isSelected,
-    required this.onSelected,
+    this.isSelected = false,
+    this.onSelected,
+    this.small = false,
   });
 
   String get label {
@@ -39,11 +41,11 @@ class EnergyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = isSelected ? VibeTokens.brandPurple100 : VibeTokens.neutral000;
-    final text = isSelected ? VibeTokens.brandPurple800 : VibeTokens.neutral600;
+    final bg = isSelected ? const Color(0x337C3AED) : VibeTokens.glassFillSubtle;
+    final text = isSelected ? VibeTokens.brandPurple200 : VibeTokens.darkTextSecondary;
     final border = isSelected
-        ? const BorderSide(color: VibeTokens.brandPurple700, width: 1.5)
-        : const BorderSide(color: VibeTokens.neutral200, width: 1.0);
+        ? const BorderSide(color: VibeTokens.brandPurple400, width: 1.5)
+        : const BorderSide(color: VibeTokens.glassBorderLight, width: 1.0);
 
     return Semantics(
       label: label,
@@ -53,13 +55,13 @@ class EnergyChip extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => onSelected(energy),
+          onTap: onSelected != null ? () => onSelected!(energy) : null,
           borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
           child: AnimatedContainer(
             duration: VibeTokens.motionFast,
-            padding: const EdgeInsets.symmetric(
-              horizontal: VibeTokens.space4,
-              vertical: VibeTokens.space2,
+            padding: EdgeInsets.symmetric(
+              horizontal: small ? 8 : VibeTokens.space3,
+              vertical: small ? 3 : VibeTokens.space1 + 2,
             ),
             decoration: BoxDecoration(
               color: bg,
@@ -69,9 +71,15 @@ class EnergyChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 16, color: text),
-                const SizedBox(width: VibeTokens.space1),
-                Text(label, style: VibeTokens.labelLg.copyWith(color: text)),
+                Icon(icon, size: small ? 12 : 15, color: text),
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: (small ? VibeTokens.labelSm : VibeTokens.labelLg).copyWith(
+                    color: text,
+                    fontSize: small ? 11 : 13,
+                  ),
+                ),
               ],
             ),
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
+import '../../services/sound_manager.dart';
+import '../glass/glass_container.dart';
 
 class SuggestionCard extends StatelessWidget {
   final String title;
@@ -21,116 +23,176 @@ class SuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int filledDots = (affinity / 10).clamp(0, 10).round();
-
     return Semantics(
       label: '$title, $age years old, $affinity percent vibe affinity',
       hint: rationale,
       button: true,
       child: Container(
         margin: const EdgeInsets.only(bottom: VibeTokens.space3),
-        decoration: BoxDecoration(
-          color: VibeTokens.neutral050,
-          borderRadius: BorderRadius.circular(VibeTokens.radiusLg),
-          border: Border.all(color: VibeTokens.neutral200, width: 1),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x0A00102D),
-              blurRadius: 8,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(VibeTokens.space4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                // Avatar (48x48) initials
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: VibeTokens.brandPurple100,
-                    borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    title.isNotEmpty ? title[0].toUpperCase() : 'V',
-                    style: VibeTokens.titleMd.copyWith(color: VibeTokens.brandPurple800),
-                  ),
-                ),
-                const SizedBox(width: VibeTokens.space3),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(title, style: VibeTokens.titleMd.copyWith(color: VibeTokens.neutral900)),
-                          const SizedBox(width: VibeTokens.space2),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: VibeTokens.neutral100,
-                              borderRadius: BorderRadius.circular(VibeTokens.radiusSm),
-                            ),
-                            child: Text('$age', style: VibeTokens.labelSm.copyWith(color: VibeTokens.neutral600)),
-                          ),
-                        ],
+        child: GlassContainer(
+          padding: const EdgeInsets.all(VibeTokens.space4),
+          borderRadius: VibeTokens.radiusLg,
+          onTap: () {
+            SoundManager().playTap();
+            onOpen();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Avatar with Ambient Glow
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: VibeTokens.heroGradient,
+                      boxShadow: [
+                        BoxShadow(
+                          color: VibeTokens.glowPurple.withAlpha(50),
+                          blurRadius: 12,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      title.isNotEmpty ? title[0].toUpperCase() : 'V',
+                      style: VibeTokens.titleMd.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
                       ),
-                      const SizedBox(height: 2),
+                    ),
+                  ),
+                  const SizedBox(width: VibeTokens.space3),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              title,
+                              style: VibeTokens.titleMd.copyWith(
+                                color: VibeTokens.darkTextPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: VibeTokens.space2),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0x28FFFFFF),
+                                borderRadius: BorderRadius.circular(VibeTokens.radiusSm),
+                              ),
+                              child: Text(
+                                '$age',
+                                style: VibeTokens.labelSm.copyWith(color: VibeTokens.darkTextSecondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          rationale,
+                          style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextSecondary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Affinity Score Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0x337C3AED),
+                      borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                      border: Border.all(color: const Color(0x66A78BFA)),
+                    ),
+                    child: Text(
+                      '$affinity%',
+                      style: VibeTokens.labelSm.copyWith(
+                        color: VibeTokens.brandPurple200,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: VibeTokens.space3),
+              const Divider(color: Color(0x18FFFFFF)),
+              const SizedBox(height: VibeTokens.space2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined, size: 14, color: VibeTokens.glowCyan),
+                      const SizedBox(width: 4),
                       Text(
-                        rationale,
-                        style: VibeTokens.bodySm.copyWith(color: VibeTokens.neutral600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        'Safe Public Spot Nearby',
+                        style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextMuted),
                       ),
                     ],
                   ),
-                ),
-                // Affinity meter: 10 dots
-                Row(
-                  children: List.generate(5, (index) {
-                    final bool isLit = (index * 2) < filledDots;
-                    return Container(
-                      margin: const EdgeInsets.only(left: 2),
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: isLit ? VibeTokens.brandPurple500 : VibeTokens.neutral300,
-                        shape: BoxShape.circle,
+                  Row(
+                    children: [
+                      if (onHide != null)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(VibeTokens.radiusSm),
+                          onTap: () {
+                            SoundManager().playTap();
+                            onHide!();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            child: Text(
+                              'Pass',
+                              style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextMuted),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(width: 6),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                        onTap: () {
+                          SoundManager().playStep();
+                          onOpen();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          decoration: BoxDecoration(
+                            gradient: VibeTokens.heroGradient,
+                            borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                            boxShadow: [
+                              BoxShadow(
+                                color: VibeTokens.glowPurple.withAlpha(60),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Invite',
+                                style: VibeTokens.labelSm.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward, size: 12, color: Colors.white),
+                            ],
+                          ),
+                        ),
                       ),
-                    );
-                  }),
-                ),
-              ],
-            ),
-            const SizedBox(height: VibeTokens.space3),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (onHide != null)
-                  TextButton(
-                    onPressed: onHide,
-                    child: Text('Hide', style: VibeTokens.labelSm.copyWith(color: VibeTokens.neutral500)),
+                    ],
                   ),
-                const SizedBox(width: VibeTokens.space2),
-                ElevatedButton(
-                  onPressed: onOpen,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: VibeTokens.brandPurple800,
-                    foregroundColor: VibeTokens.neutral000,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(VibeTokens.radiusMd)),
-                    padding: const EdgeInsets.symmetric(horizontal: VibeTokens.space4, vertical: VibeTokens.space2),
-                  ),
-                  child: const Text('Open'),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

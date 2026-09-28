@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/tokens.dart';
 import '../../state/onboarding_cubit.dart';
+import '../../services/sound_manager.dart';
 import '../../ui/chips/energy_chip.dart';
-import '../../ui/buttons/primary_button.dart';
+import '../../ui/glass/glass_container.dart';
+import '../../ui/glass/glass_button.dart';
+import '../../ui/glass/cosmic_background.dart';
 
 class FirstVibeScreen extends StatefulWidget {
   const FirstVibeScreen({super.key});
@@ -13,16 +16,31 @@ class FirstVibeScreen extends StatefulWidget {
   State<FirstVibeScreen> createState() => _FirstVibeScreenState();
 }
 
-class _FirstVibeScreenState extends State<FirstVibeScreen> {
+class _FirstVibeScreenState extends State<FirstVibeScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _noteController = TextEditingController();
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _animController.forward();
+  }
 
   @override
   void dispose() {
     _noteController.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
   void _onCreateVibe() {
+    SoundManager().playMatch();
     context.go('/matching');
   }
 
@@ -36,230 +54,228 @@ class _FirstVibeScreenState extends State<FirstVibeScreen> {
     final radius = intent?.radiusKm ?? state.profile.radiusKm;
 
     return Scaffold(
-      backgroundColor: VibeTokens.neutral000,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: VibeTokens.neutral800),
-          onPressed: () => context.go('/location'),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: VibeTokens.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: VibeTokens.space2),
-              // Badge
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: VibeTokens.space3,
-                  vertical: VibeTokens.space1,
-                ),
-                decoration: BoxDecoration(
-                  color: VibeTokens.brandPurple050,
-                  borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
-                  border: Border.all(color: VibeTokens.brandPurple200),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.star, size: 14, color: VibeTokens.brandPurple800),
-                    const SizedBox(width: 4),
-                    Text(
-                      'STEP 5 OF 5 · LAUNCH YOUR VIBE',
-                      style: VibeTokens.labelSm.copyWith(
-                        color: VibeTokens.brandPurple800,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
+      backgroundColor: VibeTokens.darkBgCosmic,
+      body: CosmicBackground(
+        child: SafeArea(
+          child: FadeTransition(
+            opacity: _fadeAnim,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: VibeTokens.space6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: VibeTokens.space3),
+
+                  // Top Navigation Bar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                          onTap: () {
+                            SoundManager().playTap();
+                            context.go('/location');
+                          },
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: VibeTokens.glassFillSubtle,
+                              border: Border.all(color: VibeTokens.glassBorderLight),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_rounded,
+                              color: VibeTokens.darkTextPrimary,
+                              size: 20,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: VibeTokens.space4),
 
-              Text(
-                'Your First Vibe',
-                style: VibeTokens.displaySm.copyWith(
-                  color: VibeTokens.neutral900,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: VibeTokens.space2),
-              Text(
-                'Ready to broadcast your intention? Verified peers in your radius with compatible vibes will be matched with you.',
-                style: VibeTokens.bodyMd.copyWith(color: VibeTokens.neutral600),
-              ),
-              const SizedBox(height: VibeTokens.space6),
+                      // Ready Badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: VibeTokens.space4,
+                          vertical: VibeTokens.space2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0x3310B981),
+                          borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                          border: Border.all(color: const Color(0x6610B981)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.bolt, size: 14, color: Color(0xFF6EE7B7)),
+                            const SizedBox(width: 5),
+                            Text(
+                              'READY TO LAUNCH',
+                              style: VibeTokens.labelSm.copyWith(
+                                color: const Color(0xFF6EE7B7),
+                                letterSpacing: 1.0,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-              // Highlighted Vibe Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(VibeTokens.space5),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFFAF5FF),
-                      Color(0xFFF3E8FF),
+                      const SizedBox(width: 42),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(VibeTokens.radiusXl),
-                  border: Border.all(color: VibeTokens.brandPurple200, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: VibeTokens.brandPurple500.withOpacity(0.12),
-                      blurRadius: 20,
-                      offset: const Offset(0, 6),
+
+                  const SizedBox(height: VibeTokens.space5),
+
+                  Text(
+                    'Review Your First Vibe',
+                    style: VibeTokens.displayLg.copyWith(
+                      color: VibeTokens.darkTextPrimary,
+                      letterSpacing: -0.6,
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                  ),
+                  const SizedBox(height: VibeTokens.space1),
+                  Text(
+                    'Verified members in your radius with aligned intention will discover your signal.',
+                    style: VibeTokens.bodyMd.copyWith(color: VibeTokens.darkTextSecondary),
+                  ),
+
+                  const SizedBox(height: VibeTokens.space5),
+
+                  // Hero Glass Card with Glowing Intention
+                  GlassContainer(
+                    padding: const EdgeInsets.all(VibeTokens.space6),
+                    borderRadius: VibeTokens.radiusXl,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0x337C3AED),
+                                border: Border.all(color: const Color(0x66A78BFA), width: 1.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: VibeTokens.glowPurple.withAlpha(60),
+                                    blurRadius: 16,
+                                  ),
+                                ],
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(icon, style: const TextStyle(fontSize: 28)),
+                            ),
+                            const SizedBox(width: VibeTokens.space4),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    title,
+                                    style: VibeTokens.titleLg.copyWith(
+                                      color: VibeTokens.darkTextPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      EnergyChip(energy: energy, small: true),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0x22FFFFFF),
+                                          borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
+                                        ),
+                                        child: Text(
+                                          '${radius.toStringAsFixed(1)} km radius',
+                                          style: VibeTokens.labelSm.copyWith(color: VibeTokens.darkTextSecondary),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: VibeTokens.space5),
+
+                        const Divider(color: Color(0x18FFFFFF)),
+
+                        const SizedBox(height: VibeTokens.space4),
+
+                        // Optional Mood Context Note
+                        Text(
+                          'Add context note (optional)',
+                          style: VibeTokens.labelLg.copyWith(color: VibeTokens.darkTextPrimary),
+                        ),
+                        const SizedBox(height: VibeTokens.space2),
                         Container(
-                          width: 54,
-                          height: 54,
                           decoration: BoxDecoration(
-                            color: VibeTokens.neutral000,
-                            borderRadius: BorderRadius.circular(VibeTokens.radiusLg),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x0E000000),
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                            color: const Color(0x18FFFFFF),
+                            borderRadius: BorderRadius.circular(VibeTokens.radiusMd),
+                            border: Border.all(color: const Color(0x33FFFFFF)),
                           ),
-                          alignment: Alignment.center,
-                          child: Text(icon, style: const TextStyle(fontSize: 28)),
-                        ),
-                        const SizedBox(width: VibeTokens.space4),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                style: VibeTokens.titleLg.copyWith(
-                                  color: VibeTokens.brandPurple900,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Broadcasting within ${radius.toStringAsFixed(1)} km',
-                                style: VibeTokens.bodySm.copyWith(color: VibeTokens.neutral600),
-                              ),
-                            ],
+                          child: TextField(
+                            controller: _noteController,
+                            maxLines: 2,
+                            style: VibeTokens.bodyMd.copyWith(color: VibeTokens.darkTextPrimary),
+                            decoration: InputDecoration(
+                              hintText: 'e.g. Grabbing iced matcha around 3pm, open to 30 min chat...',
+                              hintStyle: VibeTokens.bodyMd.copyWith(color: VibeTokens.darkTextMuted),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.all(14),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: VibeTokens.space4),
-                    const Divider(color: VibeTokens.brandPurple200),
-                    const SizedBox(height: VibeTokens.space3),
-
-                    // Details Pill Row
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildBadge(
-                          icon: Icons.bolt,
-                          text: '${energy.name.toUpperCase()} ENERGY',
-                          color: VibeTokens.brandPurple800,
-                          bg: VibeTokens.brandPurple100,
-                        ),
-                        _buildBadge(
-                          icon: Icons.place_outlined,
-                          text: state.profile.city.isNotEmpty ? state.profile.city : 'Nearby',
-                          color: VibeTokens.neutral800,
-                          bg: VibeTokens.neutral000,
-                        ),
-                        _buildBadge(
-                          icon: Icons.timer_outlined,
-                          text: 'Next 3 Hours',
-                          color: VibeTokens.neutral800,
-                          bg: VibeTokens.neutral000,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: VibeTokens.space5),
-
-              // Optional note input
-              Text(
-                'Add a quick thought or note (optional)',
-                style: VibeTokens.labelLg.copyWith(color: VibeTokens.neutral800),
-              ),
-              const SizedBox(height: VibeTokens.space2),
-              TextField(
-                controller: _noteController,
-                decoration: InputDecoration(
-                  hintText: 'e.g. In the mood for oat milk latte & good conversation',
-                  filled: true,
-                  fillColor: VibeTokens.neutral050,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(VibeTokens.radiusMd),
-                    borderSide: const BorderSide(color: VibeTokens.neutral200),
                   ),
-                ),
+
+                  const SizedBox(height: VibeTokens.space4),
+
+                  // Privacy Callout
+                  GlassContainer(
+                    padding: const EdgeInsets.all(VibeTokens.space4),
+                    borderRadius: VibeTokens.radiusMd,
+                    fillColor: const Color(0x0CFFFFFF),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.shield_outlined, color: VibeTokens.glowPurple, size: 18),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Active for 2 hours · Closes automatically after meetup check-in.',
+                            style: VibeTokens.bodySm.copyWith(color: VibeTokens.darkTextSecondary),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Broadcast Button
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: VibeTokens.space4),
+                    child: GlassButton(
+                      label: 'Broadcast Vibe & Find People →',
+                      variant: GlassButtonVariant.primary,
+                      onTap: _onCreateVibe,
+                    ),
+                  ),
+                ],
               ),
-
-              const Spacer(),
-
-              // Create Vibe Button
-              Padding(
-                padding: const EdgeInsets.only(bottom: VibeTokens.space4),
-                child: PrimaryButton(
-                  label: 'Create Vibe ✦',
-                  icon: Icons.auto_awesome,
-                  onTap: _onCreateVibe,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBadge({
-    required IconData icon,
-    required String text,
-    required Color color,
-    required Color bg,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(VibeTokens.radiusFull),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: VibeTokens.labelSm.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
